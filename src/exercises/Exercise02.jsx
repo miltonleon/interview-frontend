@@ -1,36 +1,121 @@
-import React from 'react';
+import React,{useState} from 'react';
 
 /* THE FIX STARTS HERE */
 
-// state data for 3 counters
-const data = [
-  { id: 1, value: 0 },
-  { id: 2, value: 0 },
-  { id: 3, value: 0 },
-];
-
 // Counter Component
-const Counter = ({ value }) => {
+// const Counter = ({ value, onIncrement, onDecrement, id}) => {
+
+//   return (
+//     <div className="d-flex my-2">
+//       <strong>{value}</strong>
+//       <div className="ml-2">
+//         <button className="btn btn-danger mr-1" onClick={() => {onDecrement(id, 1);}}>-</button>
+
+//         <button className="btn btn-success" onClick={() => {onIncrement(id, 1);}}>+</button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// Counter Component copy
+
+
+const Counter = ({ value, onChange, id }) => {
   return (
     <div className="d-flex my-2">
       <strong>{value}</strong>
       <div className="ml-2">
-        <button className="btn btn-danger mr-1">-</button>
-        <button className="btn btn-success">+</button>
+        <button className="btn btn-danger mr-1" onClick={() => { onChange().decrement(id, 1); }}>-</button>
+
+        <button className="btn btn-success" onClick={() => { onChange().increment(id, 1); }}>+</button>
       </div>
     </div>
   );
 };
 
+// GroupOfCounters Component
 const GroupOfCounters = () => {
+  const [total, setTotal] =useState(0);
+  const [data, setData] =useState([
+    { id: 1, value: 0 },
+    { id: 2, value: 0 },
+    { id: 3, value: 0 },
+    { id: 4, value: 0 }
+  ]);
+  
+
+  const sumaTotal = (amountToIncrement) => {
+    setTotal(total + amountToIncrement);
+  };
+  const restaTotal = (amountToDecrement) => {
+    setTotal(total - amountToDecrement);
+  };
+
+  // const onIncrement = (id, amountToIncrement) => {
+  //   setData(
+  //     data.map((counter) => 
+  //       counter.id === id ? {...counter, value: counter.value + amountToIncrement} : counter
+  //     )
+  //   )
+  //   incrementTotal(amountToIncrement);
+  // }
+
+  // const onDecrement = (id, amountToDecrement) => {
+  //   setData(
+  //     data.map((counter) => 
+  //       counter.id === id ? {...counter, value: counter.value - amountToDecrement} : counter
+  //     )
+  //   )
+  //   decrementTotal(amountToDecrement);
+  // } 
+
+  const onChange = () => {
+    return {
+      increment: function (id, amountToIncrement) {
+        setData(
+          data.map((counter) =>
+            counter.id === id ? { ...counter, value: counter.value + amountToIncrement } : counter
+          )
+        )
+        sumaTotal(amountToIncrement);
+
+      },
+
+      decrement: function (id, amountToDecrement) {
+        setData(
+          data.map((counter) =>
+            counter.id === id ? { ...counter, value: counter.value - amountToDecrement } : counter
+          )
+        )
+        restaTotal(amountToDecrement);
+
+      }
+    }
+  }
+
   return (
     <div>
       {data.map((counter) => (
-        <Counter key={counter.id} value={counter.value} />
+        <div key={counter.id}>
+          <Counter value={counter.value}
+            // onIncrement = {onIncrement}
+            // onDecrement = {onDecrement}
+            onChange={onChange}
+            id={counter.id} />
+        </div>
       ))}
+      <Total total={total} />
+
     </div>
   );
 };
+
+// Total Component
+const Total = ({ total }) => {
+  return (
+    <strong className="btn btn-dark">Total: {total}</strong>
+  )
+}
 
 /* THE FIX ENDS HERE */
 
@@ -95,7 +180,6 @@ const Exercise02 = () => {
       </ol>
 
       <hr className="my-5" />
-
       <GroupOfCounters />
     </div>
   );
